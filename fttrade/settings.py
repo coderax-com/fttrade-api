@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 
+from django.conf.global_settings import AUTH_USER_MODEL, MIDDLEWARE
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -121,3 +123,59 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+#======================================================================================================================
+# fttrade specific changes
+#======================================================================================================================
+
+import os
+
+#
+# rest_framework
+#
+INSTALLED_APPS += [
+    'rest_framework',
+]
+
+
+#
+# django-cors-headers
+#
+_pos = MIDDLEWARE.index('django.middleware.common.CommonMiddleware')
+
+MIDDLEWARE.insert(_pos, 'corsheaders.middleware.CorsMiddleware')
+
+INSTALLED_APPS += [
+    'corsheaders',
+]
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+# CSRF_TRUSTED_ORIGINS = ['*']
+
+
+#
+# Users app
+#
+AUTH_USER_MODEL = 'users.User'
+
+INSTALLED_APPS += [
+    'users',
+]
+
+AUTH_PASSWORD_VALIDATORS = []
+
+
+#
+# Databases
+#
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'HOST': os.environ.get('DB_HOST'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+    }
+}
