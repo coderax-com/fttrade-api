@@ -1,0 +1,44 @@
+services:
+    app:
+        build:
+            context: .
+            args:
+                ARG_DJANGO_ENV:     ${DJANGO_ENV}
+                ARG_DB_PASSWORD:    ${DB_PASSWORD}
+        container_name: fttrade-app
+        restart: unless-stopped
+        ports:
+            - "8000:8000"
+        volumes:
+            - .:/app
+            - tmp:/tmp
+        depends_on:
+            - postgres
+            - rabbitmq
+        command: python3 manage.py runserver 0.0.0.0:8000
+        environment:
+            DB_NAME:                ${DB_NAME}
+            DB_USER:                ${DB_USER}
+            DB_PASSWORD:            ${DB_PASSWORD}
+
+    postgres:
+        image: postgres:15.7
+        container_name: fttrade-postgres
+        restart: unless-stopped
+        environment:
+            # https://stackoverflow.com/questions/26598738/how-to-create-user-database-in-script-for-docker-postgres
+            POSTGRES_DB:            ${DB_NAME}
+            POSTGRES_USER:          ${DB_USER}
+            POSTGRES_PASSWORD:      ${DB_PASSWORD}
+        volumes:
+            - ./postgresql/data:/var/lib/postgresql/data/
+
+    rabbitmq:
+        image: rabbitmq:4.0.3
+        container_name: fttrade-rabbitmq
+        restart: unless-stopped
+        ports:
+            - "5672:5672"
+
+volumes:
+    tmp:
