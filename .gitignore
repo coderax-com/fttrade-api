@@ -1,0 +1,31 @@
+#
+# python
+#
+*.pyc
+
+#
+# celery
+#
+celerybeat-schedule
+tasks.log
+
+#
+# .env
+#
+.env
+
+#
+# postgresql
+#
+postgresql/
+
+#
+# SQLite
+#
+*.sqlite3
+
+#
+# editors
+#
+.vscode/
+.idea/
