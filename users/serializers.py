@@ -8,7 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'name', 'email', 'password']
         extra_kwargs = {
-            'password': {'write_only': True, 'min_length': 1}
+            'password': {'write_only': True, 'min_length': 8}
         }
 
     def create(self, validated_data):
