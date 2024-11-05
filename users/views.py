@@ -61,6 +61,9 @@ class LoginView(APIView):
 
 
 class UserView(RetrieveAPIView):
+    """
+    User details view
+    """
     serializer_class = UserSerializer
 
     def get_object(self):
@@ -83,6 +86,9 @@ class UserView(RetrieveAPIView):
 
 
 class LogoutView(APIView):
+    """
+    Logout view
+    """
 
     def post(self, request):
         response = Response()

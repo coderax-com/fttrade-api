@@ -132,8 +132,31 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 import os
 
 #
+# Django
+#
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'HOST': os.environ.get('DB_HOST'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+    }
+}
+
+FIXTURE_DIRS = [
+    BASE_DIR / 'fixtures',
+]
+
+STATIC_ROOT = BASE_DIR / 'collectedstatic'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
+#
 # rest_framework
 #
+
 INSTALLED_APPS += [
     'rest_framework',
 ]
@@ -158,26 +181,22 @@ CORS_ALLOW_CREDENTIALS = True
 #
 # Users app
 #
-AUTH_USER_MODEL = 'users.User'
 
 INSTALLED_APPS += [
     'users',
 ]
 
+AUTH_USER_MODEL = 'users.User'
 AUTH_PASSWORD_VALIDATORS = []
-
 TOKEN_EXPIRY_HOURS = 1
 
 
 #
-# Databases
+# portfolio app
 #
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'HOST': os.environ.get('DB_HOST'),
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-    }
-}
+
+INSTALLED_APPS += [
+    'portfolio',
+]
+
+DATA_SOURCE_PATH = BASE_DIR / 'data-source'

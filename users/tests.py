@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
+from .models import User
 
 
 class BaseUserTestCase(TestCase):
@@ -39,6 +40,8 @@ class RegisterViewTestCase(BaseUserTestCase):
         Test the api has user registration capability.
         """
         self.assertEqual(self.response.status_code, status.HTTP_201_CREATED)
+        user = User.objects.filter(email=self.USER_EMAIL).first()
+        self.assertIsNotNone(user)
 
 
 class BaseLoginViewTestCase(BaseUserTestCase):
