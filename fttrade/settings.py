@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 
 from django.conf.global_settings import AUTH_USER_MODEL, MIDDLEWARE
 
@@ -159,6 +160,26 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 INSTALLED_APPS += [
     'rest_framework',
+]
+
+
+#
+# SimpleJWT
+#
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+}
+
+INSTALLED_APPS += [
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 

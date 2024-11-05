@@ -66,16 +66,16 @@ class LoginViewTestCase(BaseLoginViewTestCase):
     def test_invalid_email(self):
         _login_data = dict(self.login_data, email=self.INVALID_EMAIL)
         response = self.client.post(self.login_url, _login_data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_invalid_password(self):
         _login_data = dict(self.login_data, password=self.INVALID_PASSWORD)
         response = self.client.post(self.login_url, _login_data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def check_jwt(self, src):
-        self.assertIn('jwt', src)
-        token = src['jwt']
+        self.assertIn('access', src)
+        token = src['access']
         self.assertIs(type(token), str)
         self.assertGreater(len(token), 0)
 
@@ -87,6 +87,8 @@ class UserViewTestCase(BaseLoginViewTestCase):
 
     def test_api_user_details(self):
         url = reverse('user')
+        access_token = self.response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['email'], self.USER_EMAIL)
@@ -99,9 +101,14 @@ class UserLogoutViewTestCase(BaseLoginViewTestCase):
 
     def test_api_user_logout(self):
         url = reverse('logout')
-        response = self.client.post(url)
+        access_token = self.response.data['access']
+        refresh_token = self.response.data['refresh']
+        # self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
+        data = {'refresh': refresh_token}
+        headers = {'HTTP_AUTHORIZATION': f"Bearer {access_token}"}
+        response = self.client.post(url, data=data, headers=headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # now see if we can still access
         url = reverse('user')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
