@@ -1,14 +1,11 @@
-import jwt
-
-from datetime import datetime, timedelta, UTC
-
 from rest_framework import status
-from rest_framework.exceptions import AuthenticationFailed, NotFound, ValidationError
+from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from rest_framework.response import Response
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from fttrade import settings
 from .serializers import JournalSerializer
 from .models import Journal, Stock
 
@@ -17,6 +14,8 @@ class NewTransactionView(APIView):
     """
     New buy or sell transaction view
     """
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = JournalSerializer
 
     def post(self, request):
@@ -38,7 +37,7 @@ class NewTransactionView(APIView):
             credit_qty = qty
 
         data = {
-            'user': 1,
+            'user': self.request.user.id,
             'stock': stock.id,
             'price': stock.price,
             'debit_qty': debit_qty,
