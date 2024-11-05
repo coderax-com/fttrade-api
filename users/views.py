@@ -5,7 +5,7 @@ import jwt
 from datetime import datetime, timedelta, UTC
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.views import APIView
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from rest_framework.response import Response
 
 from fttrade import settings
@@ -58,3 +58,22 @@ class LoginView(APIView):
 
         token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
         return token
+
+
+class UserView(RetrieveAPIView):
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        token = self.request.COOKIES.get('jwt')
+
+        if not token:
+            raise AuthenticationFailed('Unauthenticated')
+
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+
+        try:
+            user = User.objects.get(id=payload['id'])
+        except User.DoesNotExist:
+            raise AuthenticationFailed('Unauthenticated')
+        else:
+            return user

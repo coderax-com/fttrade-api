@@ -75,3 +75,15 @@ class LoginViewTestCase(BaseLoginViewTestCase):
         token = src['jwt']
         self.assertIs(type(token), str)
         self.assertGreater(len(token), 0)
+
+
+class UserViewTestCase(BaseLoginViewTestCase):
+    """
+    Test suite for the user details api views.
+    """
+
+    def test_api_user_details(self):
+        url = reverse('user')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['email'], self.USER_EMAIL)
