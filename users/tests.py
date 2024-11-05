@@ -87,3 +87,18 @@ class UserViewTestCase(BaseLoginViewTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['email'], self.USER_EMAIL)
+
+
+class UserLogoutViewTestCase(BaseLoginViewTestCase):
+    """
+    Test suite for the user logout api views.
+    """
+
+    def test_api_user_logout(self):
+        url = reverse('logout')
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # now see if we can still access
+        url = reverse('user')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

@@ -69,7 +69,10 @@ class UserView(RetrieveAPIView):
         if not token:
             raise AuthenticationFailed('Unauthenticated')
 
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Expired Token')
 
         try:
             user = User.objects.get(id=payload['id'])
@@ -77,3 +80,16 @@ class UserView(RetrieveAPIView):
             raise AuthenticationFailed('Unauthenticated')
         else:
             return user
+
+
+class LogoutView(APIView):
+
+    def post(self, request):
+        response = Response()
+        response.delete_cookie('jwt')
+
+        response.data = {
+            'message': 'success',
+        }
+
+        return response
