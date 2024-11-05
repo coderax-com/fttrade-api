@@ -19,13 +19,21 @@ class BaseAuthenticatedTestCase(TestCase):
 
     def create_stock(self):
 
-        stock_data = {
-            'id': 'ALI',
-            'name': 'Ayala Land Inc.',
-            'price': 1.01,
-        }
+        stock_data = [
+            {
+                'id': 'ALI',
+                'name': 'Ayala Land Inc.',
+                'price': 1.01,
+            },
+            {
+                'id': 'BPI',
+                'name': 'Bank of Philippine Islands',
+                'price': 2.02,
+            },
+        ]
 
-        Stock.objects.create(**stock_data)
+        for stock in stock_data:
+            Stock.objects.create(**stock)
 
     def create_user(self):
 
@@ -64,3 +72,26 @@ class BuyStockViewTestCase(BaseAuthenticatedTestCase):
         self.assertEqual(journal.user, self.user)
         self.assertEqual(journal.stock.id, self.buy_stock_data['stock'])
         self.assertEqual(journal.debit_qty, self.buy_stock_data['qty'])
+
+
+class SellStockViewTestCase(BaseAuthenticatedTestCase):
+
+    def setUp(self):
+        super().setUp()
+        self.sell_stock_url = reverse('new_transaction')
+
+        self.sell_stock_data = {
+            'type': 'sell',
+            'stock': 'BPI',
+            'qty': 4,
+        }
+
+        self.response = self.client.post(self.sell_stock_url, self.sell_stock_data, format='json')
+
+    def test_sell_stock(self):
+        self.assertEqual(self.response.status_code, status.HTTP_201_CREATED)
+        self.assertGreater(Journal.objects.count(), 0)
+        journal = Journal.objects.all().first()
+        self.assertEqual(journal.user, self.user)
+        self.assertEqual(journal.stock.id, self.sell_stock_data['stock'])
+        self.assertEqual(journal.credit_qty, self.sell_stock_data['qty'])
