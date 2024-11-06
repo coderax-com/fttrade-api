@@ -22,8 +22,6 @@ services:
             DB_NAME:                    ${DB_NAME}
             DB_USER:                    ${DB_USER}
             DB_PASSWORD:                ${DB_PASSWORD}
-            DJANGO_SUPERUSER_EMAIL:     ${DJANGO_SUPERUSER_EMAIL}
-            DJANGO_SUPERUSER_PASSWORD:  ${DJANGO_SUPERUSER_PASSWORD}
     postgres:
         image: postgres:15.7
         container_name: fttrade-postgres
