@@ -7,7 +7,7 @@ from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import Journal, Stock
-from .utils import CsvLoader
+from .utils.csv_loader import CsvLoader
 
 
 class BaseAuthenticatedTestCase(TestCase):
@@ -106,6 +106,6 @@ class CsvLoaderTestCase(BaseAuthenticatedTestCase):
         self.loader = CsvLoader()
 
     def test_csv_loader(self):
-        df = self.loader.load_csv_to_db(self.filepath)
+        df, errors = self.loader.load_csv_to_db(self.filepath)
         print('>>>>', df.head())
-        print('>>>>', self.loader.errors)
+        print('>>>>', errors)
