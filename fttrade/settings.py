@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
 from pathlib import Path
 from datetime import timedelta
 
@@ -131,6 +130,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #======================================================================================================================
 
 import os
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 #
 # Django
@@ -241,3 +244,4 @@ INSTALLED_APPS += [
 ]
 
 DATA_SOURCE_DIR = BASE_DIR / 'data-source'
+TMP_DIR = Path('/var/tmp')

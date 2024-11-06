@@ -1,4 +1,5 @@
 import logging
+import os
 import uuid
 import pandas as pd
 from pathlib import Path
@@ -89,6 +90,8 @@ class FileUploadView(views.APIView):
             filepath = self._save_uploaded_file(file_obj)
             csv_loader = CsvIngestor()
             _, errors = csv_loader.load_csv_to_db(filepath)
+            os.remove(filepath)
+
         except ClientException as exc:
             return Response({'detail': str(exc)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as exc:
@@ -100,7 +103,7 @@ class FileUploadView(views.APIView):
     @staticmethod
     def _save_uploaded_file(file_obj):
         unique_filename = str(uuid.uuid4())
-        filepath = settings.DATA_SOURCE_DIR / f"{unique_filename}.csv"
+        filepath = settings.TMP_DIR / f"{unique_filename}.csv"
 
         with open(filepath, 'wb') as destination:
 

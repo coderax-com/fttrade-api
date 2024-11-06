@@ -7,3 +7,4 @@ pandas==2.2.3
 psycopg2_binary==2.9.10
 SQLAlchemy==2.0.36
 celery==5.4.0
+python-dotenv==1.0.1
