@@ -3,13 +3,16 @@ import pandas as pd
 
 from pathlib import Path
 from django.conf import settings
-from .df_manipulator import DataFrameManipulator
+from django.db import connection
+from sqlalchemy import create_engine
+
+from .df_transformer import DataFrameTransformer
 
 
 log = logging.getLogger(__name__)
 
 
-class CsvLoader:
+class CsvIngestor:
     """
     Class for ingesting .csv files and saving it directly into the database.
 
@@ -33,23 +36,24 @@ class CsvLoader:
             ]
         """
         df = self._read_csv(csv_path)
-        dfm = DataFrameManipulator(df)
-        # self._save_df(df)
+        dfm = DataFrameTransformer(df)
+        self._save_df(df)
         return [dfm.df, dfm.errors]
 
-    def _read_csv(self, path:Path) -> pd.DataFrame:
+    @staticmethod
+    def _read_csv(path:Path) -> pd.DataFrame:
         df = pd.read_csv(str(path))
         return df
 
-
-    def _connect_to_db(self):
-        database = settings.DATABASES['default']
-        conn_str = "postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}".format(**database)
+    @staticmethod
+    def _connect_to_db(conn_str=None):
+        database = connection.settings_dict
+        conn_str = conn_str or "postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}".format(**database)
         engine = create_engine(conn_str)
         return engine
 
     def _save_df(self, df:pd.DataFrame):
         table_name = 'portfolio_journal'
         engine = self._connect_to_db()
-        if_exists = 'append'
-        df.to_sql(name=table_name, con=engine, index=False, if_exists=if_exists)
+        df.to_sql(name=table_name, con=engine, index=False, if_exists='append')
+        engine.dispose()

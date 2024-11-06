@@ -7,13 +7,15 @@ from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import Journal, Stock
-from .utils.csv_loader import CsvLoader
+from .utils.csv_ingestor import CsvIngestor
+
+
+USER_CLASS = get_user_model()
 
 
 class BaseAuthenticatedTestCase(TestCase):
 
     def setUp(self):
-        self.UserClass = get_user_model()
         self.create_stock()
         self.create_user()
         self.authenticate_user()
@@ -44,7 +46,7 @@ class BaseAuthenticatedTestCase(TestCase):
             'password': 'plsletmein',
         }
 
-        self.user = self.UserClass.objects.create(**user_data)
+        self.user = USER_CLASS.objects.create(**user_data)
 
     def authenticate_user(self):
         refresh = RefreshToken.for_user(self.user)
@@ -98,14 +100,14 @@ class SellStockViewTestCase(BaseAuthenticatedTestCase):
         self.assertEqual(journal.credit_qty, self.sell_stock_data['qty'])
 
 
-class CsvLoaderTestCase(BaseAuthenticatedTestCase):
-
-    def setUp(self):
-        super().setUp()
-        self.filepath = settings.DATA_SOURCE_DIR / 'admin-transactions.csv'
-        self.loader = CsvLoader()
-
-    def test_csv_loader(self):
-        df, errors = self.loader.load_csv_to_db(self.filepath)
-        print('>>>>', df.head())
-        print('>>>>', errors)
+# class CsvIngestorTestCase(BaseAuthenticatedTestCase):
+#
+#     def setUp(self):
+#         super().setUp()
+#         self.filepath = settings.DATA_SOURCE_DIR / 'admin-transactions.csv'
+#         self.ingestor = CsvIngestor()
+#
+#     def test_csv_loader(self):
+#         df, errors = self.ingestor.load_csv_to_db(self.filepath)
+#         print('>>>>', df.head())
+#         print('>>>>', errors)

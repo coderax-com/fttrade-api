@@ -2,7 +2,6 @@ import logging
 import uuid
 from pathlib import Path
 
-from click import ClickException
 from django.conf import settings
 from rest_framework import status, views
 from rest_framework.exceptions import NotFound, ValidationError
@@ -15,8 +14,8 @@ from rest_framework.views import APIView
 from .exceptions import ClientException
 from .serializers import JournalSerializer
 from .models import Stock
-from .utils.csv_loader import CsvLoader
-from .utils.df_manipulator import TransactType
+from .utils.csv_ingestor import CsvIngestor
+from .utils.df_transformer import TransactType
 
 
 log = logging.getLogger(__name__)
@@ -31,11 +30,11 @@ class NewTransactionView(APIView):
     serializer_class = JournalSerializer
 
     def post(self, request):
-        type = request.data.get('type')
+        _type = request.data.get('type')
         stock_id =request.data.get('stock')
         qty = request.data.get('qty')
 
-        transact_type = TransactType(type, qty)
+        transact_type = TransactType(_type, qty)
 
         if not transact_type.type:
             raise ValidationError("Choose 'buy' or 'sell' for type")
@@ -67,6 +66,8 @@ class FileUploadView(views.APIView):
     """
     Upload a .csv file
     """
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     parser_classes = (FormParser, MultiPartParser,)
 
     def put(self, request):
@@ -84,17 +85,18 @@ class FileUploadView(views.APIView):
                 raise ClientException("File must be .csv")
 
             filepath = self._save_uploaded_file(file_obj)
-            csv_loader = CsvLoader()
-            df, errors = csv_loader.load_csv_to_db(filepath)
+            csv_loader = CsvIngestor()
+            _, errors = csv_loader.load_csv_to_db(filepath)
         except ClientException as exc:
             return Response({'detail': str(exc)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as exc:
             return Response({'detail': str(exc)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         msg = f"File {file_obj.name} was successfully uploaded"
-        return Response({'message': msg}, status=status.HTTP_201_CREATED)
+        return Response({'message': msg, 'errors': errors}, status=status.HTTP_201_CREATED)
 
-    def _save_uploaded_file(self, file_obj):
+    @staticmethod
+    def _save_uploaded_file(file_obj):
         unique_filename = str(uuid.uuid4())
         filepath = settings.DATA_SOURCE_DIR / f"{unique_filename}.csv"
 
