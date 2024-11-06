@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
@@ -5,14 +6,16 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from users.serializers import UserSerializer
 from .models import Journal, Stock
+from .utils.csv_ingestor import CsvIngestor
+
+
+USER_CLASS = get_user_model()
 
 
 class BaseAuthenticatedTestCase(TestCase):
 
     def setUp(self):
-        self.UserClass = get_user_model()
         self.create_stock()
         self.create_user()
         self.authenticate_user()
@@ -43,7 +46,7 @@ class BaseAuthenticatedTestCase(TestCase):
             'password': 'plsletmein',
         }
 
-        self.user = self.UserClass.objects.create(**user_data)
+        self.user = USER_CLASS.objects.create(**user_data)
 
     def authenticate_user(self):
         refresh = RefreshToken.for_user(self.user)
@@ -95,3 +98,16 @@ class SellStockViewTestCase(BaseAuthenticatedTestCase):
         self.assertEqual(journal.user, self.user)
         self.assertEqual(journal.stock.id, self.sell_stock_data['stock'])
         self.assertEqual(journal.credit_qty, self.sell_stock_data['qty'])
+
+
+# class CsvIngestorTestCase(BaseAuthenticatedTestCase):
+#
+#     def setUp(self):
+#         super().setUp()
+#         self.filepath = settings.DATA_SOURCE_DIR / 'admin-transactions.csv'
+#         self.ingestor = CsvIngestor()
+#
+#     def test_csv_loader(self):
+#         df, errors = self.ingestor.load_csv_to_db(self.filepath)
+#         print('>>>>', df.head())
+#         print('>>>>', errors)

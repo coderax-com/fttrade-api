@@ -140,6 +140,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'HOST': os.environ.get('DB_HOST'),
+        'PORT': 5432,
         'NAME': os.environ.get('DB_NAME'),
         'USER': os.environ.get('DB_USER'),
         'PASSWORD': os.environ.get('DB_PASSWORD'),
@@ -152,6 +153,25 @@ FIXTURE_DIRS = [
 
 STATIC_ROOT = BASE_DIR / 'collectedstatic'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+
+#
+# Logging
+#
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+        'propagate': True,
+    },
+}
 
 
 #
@@ -220,4 +240,4 @@ INSTALLED_APPS += [
     'portfolio',
 ]
 
-DATA_SOURCE_PATH = BASE_DIR / 'data-source'
+DATA_SOURCE_DIR = BASE_DIR / 'data-source'

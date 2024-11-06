@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-from django_extensions.db.models import TimeStampedModel
+
 
 USER_CLASS = get_user_model()
 
@@ -14,7 +14,7 @@ class Stock(models.Model):
     price = models.DecimalField(max_digits=18, decimal_places=4)
 
 
-class Journal(TimeStampedModel):
+class Journal(models.Model):
     """
     Class for keeping track of transactions.
     """
