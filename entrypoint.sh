@@ -7,17 +7,14 @@
 #
 # Django migrations
 #
-python manage.py makemigrations --no-input
-python manage.py migrate --no-input
+python3 manage.py makemigrations --no-input
+python3 manage.py migrate --no-input
 
 
 #
-# create superuser
+# fixtures
 #
-python manage.py createsuperuser \
-    --noinput \
-    --email $DJANGO_SUPERUSER_EMAIL \
-    --password $DJANGO_SUPERUSER_PASSWORD
+python3 manage.py loaddata fixtures/*.json
 
 
 #

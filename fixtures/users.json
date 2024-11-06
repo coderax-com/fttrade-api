@@ -1,0 +1,18 @@
+[
+{
+    "model": "users.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$870000$0qD8OFN8Aszh4yXNELmQGq$8LVIpuUwsIINmhWsop0jm3+u20+VGl6aBOfIbwIsK0U=",
+        "last_login": null,
+        "is_superuser": false,
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2024-11-06T15:38:01.538Z",
+        "name": "Admin",
+        "email": "admin@fttrade.com",
+        "groups": [],
+        "user_permissions": []
+    }
+}
+]
