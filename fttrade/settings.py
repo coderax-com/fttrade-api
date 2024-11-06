@@ -223,6 +223,23 @@ CORS_ALLOW_CREDENTIALS = True
 
 
 #
+# django-rest-swagger
+#
+INSTALLED_APPS += [
+    'rest_framework_swagger',
+]
+
+
+#
+# DRF YASG
+#
+
+INSTALLED_APPS += [
+    'drf_yasg',
+]
+
+
+#
 # Users app
 #
 

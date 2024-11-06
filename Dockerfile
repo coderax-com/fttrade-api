@@ -4,7 +4,8 @@ LABEL maintainer="Darwin M <darwin.molero@coderax.com>"
 ENV PYTHONUNBUFFERED    1
 
 RUN apt update \
-    && apt install -y tree \
+    && apt install -y --no-install-recommends \
+            tree \
             cron \
             nano \
     && pip install --upgrade pip \

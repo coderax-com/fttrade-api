@@ -50,6 +50,15 @@ A sample transactions file that can be used for the .csv upload
 is found in the `data-source/` directory.
 
 
+Swagger
+-------
+
+Due to time constraint, the Swagger API configuration is not polished.
+However, to view the endpoints, you can open your browser to:
+
+http://localhost:8000
+
+
 Superuser
 ---------
 
