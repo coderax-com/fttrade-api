@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
@@ -5,8 +6,8 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from users.serializers import UserSerializer
 from .models import Journal, Stock
+from .utils import CsvLoader
 
 
 class BaseAuthenticatedTestCase(TestCase):
@@ -95,3 +96,16 @@ class SellStockViewTestCase(BaseAuthenticatedTestCase):
         self.assertEqual(journal.user, self.user)
         self.assertEqual(journal.stock.id, self.sell_stock_data['stock'])
         self.assertEqual(journal.credit_qty, self.sell_stock_data['qty'])
+
+
+class CsvLoaderTestCase(BaseAuthenticatedTestCase):
+
+    def setUp(self):
+        super().setUp()
+        self.filepath = settings.DATA_SOURCE_DIR / 'admin-transactions.csv'
+        self.loader = CsvLoader()
+
+    def test_csv_loader(self):
+        df = self.loader.load_csv_to_db(self.filepath)
+        print('>>>>', df.head())
+        print('>>>>', self.loader.errors)

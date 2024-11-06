@@ -126,4 +126,4 @@ collectedstatic/
 media/
 postgresql/
 tmp/
-data-sources/
+data-source/
