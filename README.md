@@ -6,6 +6,14 @@ on Nov 6, 2024
 at Davao City, Philippines
 
 
+Requirements
+------------
+
+- Windows 10+ or MacOS
+- wsl 2 if Windows
+- Docker Desktop for (Windows, MacOS)
+
+
 Prep
 ----
 
@@ -31,7 +39,8 @@ Tests
 Postman
 -------
 
-I exported my collection for Postman. It is in the `postman/` directory.
+I exported my collection for Postman. It is in the `postman/` directory. 
+I believe it was exported as v2.1.
 
 
 Sample Transactions File
