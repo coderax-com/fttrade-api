@@ -1,4 +1,4 @@
-from django.conf import settings
+from decimal import Decimal
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
@@ -11,6 +11,7 @@ from .utils.csv_ingestor import CsvIngestor
 
 
 USER_CLASS = get_user_model()
+ADMIN_EMAIL = 'admin@fttrade.com'
 
 
 class BaseAuthenticatedTestCase(TestCase):
@@ -42,7 +43,7 @@ class BaseAuthenticatedTestCase(TestCase):
 
         user_data = {
             'name': 'Administrator',
-            'email': 'admin@fttrade.com',
+            'email': ADMIN_EMAIL,
             'password': 'plsletmein',
         }
 
@@ -55,6 +56,9 @@ class BaseAuthenticatedTestCase(TestCase):
 
 
 class BuyStockViewTestCase(BaseAuthenticatedTestCase):
+    """
+    Test suite for /api/portfolio/new-transaction endpoint
+    """
 
     def setUp(self):
         super().setUp()
@@ -78,6 +82,9 @@ class BuyStockViewTestCase(BaseAuthenticatedTestCase):
 
 
 class SellStockViewTestCase(BaseAuthenticatedTestCase):
+    """
+    Test suite for /api/portfolio/new-transaction endpoint
+    """
 
     def setUp(self):
         super().setUp()
@@ -111,3 +118,54 @@ class SellStockViewTestCase(BaseAuthenticatedTestCase):
 #         df, errors = self.ingestor.load_csv_to_db(self.filepath)
 #         print('>>>>', df.head())
 #         print('>>>>', errors)
+
+
+class TotalInvestedViewTestCase(BaseAuthenticatedTestCase):
+    """
+    Test suite for /api/portfolio/total-invested endpoint
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.buy_stock_url = reverse('new_transaction')
+        self.total_invested_url = reverse('total_invested')
+
+        self.buy_stock_data = [
+            {
+                'type': 'buy',
+                'stock': 'ALI',
+                'qty': 3,
+            },
+            {
+                'type': 'buy',
+                'stock': 'ALI',
+                'qty': 5,
+            },
+            {
+                'type': 'sell',
+                'stock': 'ALI',
+                'qty': 2,
+            },
+            {
+                'type': 'buy',
+                'stock': 'BPI',
+                'qty': 4,
+            },
+            {
+                'type': 'sell',
+                'stock': 'BPI',
+                'qty': 1,
+            },
+        ]
+
+        # ALI  6.06
+        for payload in self.buy_stock_data:
+            self.client.post(self.buy_stock_url, payload, format='json')
+
+        params = {'stock': 'ALI'}
+        self.response = self.client.get(self.total_invested_url, params)
+
+    def test_total_invested(self):
+        self.assertEqual(self.response.status_code, status.HTTP_200_OK)
+        expected_data = {'stock': 'ALI', 'transactions': 3, 'total': Decimal('6.0600')}
+        self.assertEqual(self.response.data, expected_data)

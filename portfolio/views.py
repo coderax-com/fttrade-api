@@ -1,5 +1,6 @@
 import logging
 import uuid
+import pandas as pd
 from pathlib import Path
 
 from django.conf import settings
@@ -13,8 +14,9 @@ from rest_framework.views import APIView
 
 from .exceptions import ClientException
 from .serializers import JournalSerializer
-from .models import Stock
+from .models import Stock, Journal
 from .utils.csv_ingestor import CsvIngestor
+from .utils.df_calculator import DataFrameCalculator
 from .utils.df_transformer import TransactType
 
 
@@ -106,3 +108,48 @@ class FileUploadView(views.APIView):
                 destination.write(chunk)
 
         return filepath
+
+
+class TotalInvestedView(APIView):
+    """
+    Get the total amount invested in a particular stock.
+    """
+
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        stock_id = request.query_params.get('stock')
+        user = request.user
+
+        try:
+            qs = self._fetch_transactions(user, stock_id)
+            cnt = len(qs)
+
+            if not cnt:
+                total = 0
+            else:
+                df = pd.DataFrame(list(qs.values()))
+                df_calculator = DataFrameCalculator(df)
+                total = df_calculator.get_total()
+
+        except Exception as exc:
+            return Response({'detail': str(exc)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        data = {
+            'stock': stock_id,
+            'transactions': cnt,
+            'total': total,
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
+
+    def _fetch_transactions(self, user, stock_id:str):
+
+        try:
+            stock = Stock.objects.get(id=stock_id)
+        except Stock.DoesNotExist:
+            raise NotFound(f"Stock {stock_id} does not exist")
+
+        qs = Journal.objects.filter(user=user, stock=stock)
+        return qs
