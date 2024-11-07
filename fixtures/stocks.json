@@ -1,0 +1,74 @@
+[
+{
+    "model": "portfolio.stock",
+    "pk": "ALI",
+    "fields": {
+        "name": "Ayala Land Inc.",
+        "price": "1.0100"
+    }
+},
+{
+    "model": "portfolio.stock",
+    "pk": "BPI",
+    "fields": {
+        "name": "Bank of Philippine Islands",
+        "price": "1.0200"
+    }
+},
+{
+    "model": "portfolio.stock",
+    "pk": "CEB",
+    "fields": {
+        "name": "Cebu Air Inc.",
+        "price": "1.0300"
+    }
+},
+{
+    "model": "portfolio.stock",
+    "pk": "DTEL",
+    "fields": {
+        "name": "Phil. Long Distance Telephone Co.",
+        "price": "2.0100"
+    }
+},
+{
+    "model": "portfolio.stock",
+    "pk": "EVER",
+    "fields": {
+        "name": "Ever Gotesco Resources and Hold'gs Inc.",
+        "price": "2.0200"
+    }
+},
+{
+    "model": "portfolio.stock",
+    "pk": "FGEN",
+    "fields": {
+        "name": "First Gen Corporation",
+        "price": "2.0300"
+    }
+},
+{
+    "model": "portfolio.stock",
+    "pk": "GLO",
+    "fields": {
+        "name": "Globe Telecom Inc.",
+        "price": "3.0100"
+    }
+},
+{
+    "model": "portfolio.stock",
+    "pk": "HOME",
+    "fields": {
+        "name": "AllHome Corp.",
+        "price": "3.0200"
+    }
+},
+{
+    "model": "portfolio.stock",
+    "pk": "IMI",
+    "fields": {
+        "name": "Integrated Micro Electronics Inc.",
+        "price": "3.0300"
+    }
+}
+]

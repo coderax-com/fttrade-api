@@ -9,8 +9,10 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
 from pathlib import Path
+from datetime import timedelta
+
+from django.conf.global_settings import AUTH_USER_MODEL, MIDDLEWARE
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -121,3 +123,142 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+#======================================================================================================================
+# fttrade specific changes
+#======================================================================================================================
+
+import os
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+#
+# Django
+#
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': 5432,
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+    }
+}
+
+FIXTURE_DIRS = [
+    BASE_DIR / 'fixtures',
+]
+
+STATIC_ROOT = BASE_DIR / 'collectedstatic'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
+#
+# Logging
+#
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+        'propagate': True,
+    },
+}
+
+
+#
+# rest_framework
+#
+
+INSTALLED_APPS += [
+    'rest_framework',
+]
+
+
+#
+# SimpleJWT
+#
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+}
+
+INSTALLED_APPS += [
+    'rest_framework_simplejwt.token_blacklist',
+]
+
+
+#
+# django-cors-headers
+#
+_pos = MIDDLEWARE.index('django.middleware.common.CommonMiddleware')
+
+MIDDLEWARE.insert(_pos, 'corsheaders.middleware.CorsMiddleware')
+
+INSTALLED_APPS += [
+    'corsheaders',
+]
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+# CSRF_TRUSTED_ORIGINS = []
+
+
+#
+# django-rest-swagger
+#
+INSTALLED_APPS += [
+    'rest_framework_swagger',
+]
+
+
+#
+# DRF YASG
+#
+
+INSTALLED_APPS += [
+    'drf_yasg',
+]
+
+
+#
+# Users app
+#
+
+INSTALLED_APPS += [
+    'users',
+]
+
+AUTH_USER_MODEL = 'users.User'
+AUTH_PASSWORD_VALIDATORS = []
+TOKEN_EXPIRY_HOURS = 1
+
+
+#
+# portfolio app
+#
+
+INSTALLED_APPS += [
+    'portfolio',
+]
+
+DATA_SOURCE_DIR = BASE_DIR / 'data-source'
+TMP_DIR = Path('/var/tmp')
